@@ -38,20 +38,6 @@ $(document).ready(function(){
      $('form').live_validation(); 
 });
 
-======================
-Setup your html inputs like the example below
-======================
-<div class="control-group">
-	<label class="control-label">E-mail</label>
-	<div class="controls">
-		<input type="text" name="email" class="email">
-		<span class="hide">
-			<span class="help-inline grayed-out default">What's your email?</span>
-			<span class="help-inline error empty">E-mail is required!</span>
-			<span class="hide help-inline error email">E-mail doesn't look valid!</span>
-			<span class="hide help-inline success">Looking good!</span>
-		</span>
-	</div>
-</div>
+Please see the html example at http://misha.herokuapp.com/live_validation to see how to setup your validated inputs.
 
 
