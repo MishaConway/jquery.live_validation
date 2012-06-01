@@ -85,6 +85,10 @@ jQuery.live_validation = {
             $(this).addClass('hide');
         });
         spans.find('.' + clss).removeClass('hide');
+        if( error )
+            spans.find('.' + clss).addClass('error');
+
+
         return spans.find('.' + clss).size() > 0;
     },
 
