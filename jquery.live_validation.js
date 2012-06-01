@@ -12,11 +12,11 @@
 var live_validation_validators = []; //TODO: rename this to validators
 jQuery.live_validation = {
     set_validator:function (clss, validator_callback) {
-        live_validation_validators[clss.trim()] = [false, true, validator_callback];
+        live_validation_validators[clss] = [false, true, validator_callback];
     },
 
     remove_validator:function (clss) {
-        delete live_validation_validators[clss.trim()];
+        delete live_validation_validators[clss];
     },
 
     list_validators:function () {
@@ -146,14 +146,38 @@ jQuery.live_validation = {
             }
             else {
                 for (var clss in live_validation_validators) {
-                    if (spans.find('.' + clss).size()) {
-                        if (live_validation_validators[clss][2](input)) {
+                    var contains_validator = false;
+                    var actual_class = '';
+                    if( typeof(clss) == 'string' && '/' != clss[0] )
+                    {
+                        contains_validator = spans.find('.' + clss).size();
+                        actual_class = clss;
+                    }
+                    else
+                    {
+                        var r = new RegExp(clss.replace( /\//g, '' ));
+                        spans.children().each(function(){
+                            var classes = $(this).attr('class').split(" ");
+                            for( var i = 0; i < classes.length; i++)
+                            {
+                                if( r.test(classes[i]))
+                                {
+
+                                    contains_validator = true;
+                                    actual_class = classes[i];
+                                }
+                            }
+                        });
+                    }
+
+                    if (contains_validator) {
+                        if (live_validation_validators[clss][2](input, actual_class)) {
 
                         }
                         else {
                             has_errors = true;
                             if (!suppress_errors)
-                                $.live_validation.set_message(input, clss, live_validation_validators[clss][0], live_validation_validators[clss][1])
+                                $.live_validation.set_message(input, actual_class, live_validation_validators[clss][0], live_validation_validators[clss][1])
                             else
                                 $.live_validation.set_default_message(input);
 
@@ -271,15 +295,14 @@ $.live_validation.set_validator('email-confirm', function (input) {
 
     return email == email_confirm;
 });
-$.live_validation.set_validator('min-3', function (input) {
-    return input.val().length >= 3;
+$.live_validation.set_validator( /min-[1-9]+$/, function (input, clss) {
+    return input.val().length >= parseInt(clss.split('-')[1]);
 });
-$.live_validation.set_validator('min-5', function (input) {
-    return input.val().length >= 5;
+
+$.live_validation.set_validator( /max-[1-9]+$/, function (input, clss) {
+    return input.val().length <= parseInt(clss.split('-')[1]);
 });
-$.live_validation.set_validator('min-20', function (input) {
-    return input.val().length >= 20;
-});
+
 $.live_validation.set_validator('contains-letters', function (input) {
     return /[A-Za-z]+/i.test(input.val());
 });
